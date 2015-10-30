@@ -25,7 +25,7 @@ namespace SourceCodeAnalyzer
 
             FileStream fileStream = new FileStream(filePath, FileMode.Open);
             CSharpFile file = new CSharpFile(fileStream);
-            Console.WriteLine(String.Format("The file has {0} lines.", file.LinesCount));
+            Console.WriteLine(String.Format("The file has {0} lines.", file.GetCodeLinesCount()));
         }
     }
 }

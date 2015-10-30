@@ -9,27 +9,46 @@ namespace SourceCodeAnalyzer
 {
     public class CSharpFile
     {
-        private List<string> lines;
-
-        public int LinesCount
+        private Stream stream;
+        
+        public CSharpFile(Stream csharpFileStream)
         {
-            get
-            {
-                return lines.Count();
-            }
+            stream = csharpFileStream;            
         }
 
-        public CSharpFile(Stream stream)
+        public uint GetCodeLinesCount()
         {
-            lines = new List<string>();
+            return CalculateCodeLinesCount();
+        }
+
+        private uint CalculateCodeLinesCount()
+        {
+            uint lineCount = 0;
             using (StreamReader streamReader = new StreamReader(stream))
             {
                 while (!streamReader.EndOfStream)
                 {
-                    lines.Add(streamReader.ReadLine());
+                    CSharpLine line = new CSharpLine(streamReader.ReadLine());
+                    if (!line.IsLineComment() && !line.IsBlockComment() && !line.IsEmpty())
+                    {
+                        if (line.IsStartBlockComment())
+                        {
+                            if (!line.IsOnlyStartBlockComment()) lineCount++;
+                            do
+                            {
+                                if (!streamReader.EndOfStream)
+                                {
+                                    line = new CSharpLine(streamReader.ReadLine());
+                                }
+                            } while (!line.IsEndBlockComment());
+                            if (!line.IsOnlyEndBlockComment()) lineCount++;
+                        }
+                        else lineCount++;
+                    }
                 }
             }
-        }
-        
+            return lineCount;
+        }        
+
     }
 }
