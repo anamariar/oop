@@ -7,48 +7,93 @@ using System.IO;
 
 namespace SourceCodeAnalyzer
 {
-    public class CSharpFile
+    public class CSharpFile: IDisposable
     {
         private Stream stream;
+        private StreamReader streamReader;
         
         public CSharpFile(Stream csharpFileStream)
         {
-            stream = csharpFileStream;            
-        }
+            stream = csharpFileStream;
+            streamReader = new StreamReader(stream); 
+        }              
 
         public uint GetCodeLinesCount()
         {
-            return CalculateCodeLinesCount();
+            stream.Seek(0, SeekOrigin.Begin);
+            uint lineCount = 0;
+            while (!streamReader.EndOfStream)
+            {
+                CSharpLine line = new CSharpLine(streamReader.ReadLine());
+                if (!line.IsComment() && !line.IsEmpty())
+                {
+                    if (line.IsStartBlockComment())
+                    {
+                        if (!line.IsOnlyStartBlockComment()) lineCount++;
+                        do
+                        {
+                            if (!streamReader.EndOfStream)
+                            {
+                                line = new CSharpLine(streamReader.ReadLine());
+                            }
+                        } while (!line.IsEndBlockComment());
+                        if (!line.IsOnlyEndBlockComment()) lineCount++;
+                    }
+                    else lineCount++;
+                }
+            }
+            return lineCount;
         }
 
-        private uint CalculateCodeLinesCount()
+        public string GetCommentLinesCodeRatio()
         {
+            stream.Seek(0, SeekOrigin.Begin);
+            uint commentCount = 0;
             uint lineCount = 0;
-            using (StreamReader streamReader = new StreamReader(stream))
+            while (!streamReader.EndOfStream)
             {
-                while (!streamReader.EndOfStream)
+                CSharpLine line = new CSharpLine(streamReader.ReadLine());
+                lineCount++;
+                if (!line.IsEmpty())
                 {
-                    CSharpLine line = new CSharpLine(streamReader.ReadLine());
-                    if (!line.IsLineComment() && !line.IsBlockComment() && !line.IsEmpty())
+                    if (line.IsComment())
+                    {
+                        commentCount++;
+                    }
+                    else
                     {
                         if (line.IsStartBlockComment())
                         {
-                            if (!line.IsOnlyStartBlockComment()) lineCount++;
-                            do
+                            if (line.IsOnlyStartBlockComment()) commentCount++;
+                            while (!line.IsEndBlockComment())
                             {
                                 if (!streamReader.EndOfStream)
                                 {
                                     line = new CSharpLine(streamReader.ReadLine());
+                                    lineCount++;
+                                    commentCount++;
                                 }
-                            } while (!line.IsEndBlockComment());
-                            if (!line.IsOnlyEndBlockComment()) lineCount++;
+                            }
+                            if (!line.IsOnlyEndBlockComment()) commentCount--;
                         }
-                        else lineCount++;
                     }
                 }
             }
-            return lineCount;
-        }        
+            return string.Format("{0}:{1}", commentCount, lineCount );
+        }
 
+        public void Dispose()
+        {
+            Dispose(true);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                if (streamReader != null) streamReader.Dispose();
+            }
+        }
+        
     }
 }

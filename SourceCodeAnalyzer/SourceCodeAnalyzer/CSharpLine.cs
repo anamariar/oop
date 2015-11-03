@@ -24,19 +24,14 @@ namespace SourceCodeAnalyzer
             return content.Contains(blockCommentEnd) && !content.StartsWith(blockCommentStart);
         }
 
-        public bool IsBlockComment()
-        {
-            return content.StartsWith(blockCommentStart) && content.EndsWith(blockCommentEnd);
-        }
-
         public bool IsStartBlockComment()
         {
             return content.Contains(blockCommentStart) && !content.EndsWith(blockCommentEnd);
         }
 
-        public bool IsLineComment()
+        public bool IsComment()
         {
-            return content.StartsWith(lineCommentStart);
+            return content.StartsWith(lineCommentStart) || (content.StartsWith(blockCommentStart) && content.EndsWith(blockCommentEnd));
         }
 
         public bool IsOnlyStartBlockComment()

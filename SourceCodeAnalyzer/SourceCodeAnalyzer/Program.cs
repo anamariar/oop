@@ -11,21 +11,71 @@ namespace SourceCodeAnalyzer
     {
         public static void Main(string[] args)
         {
-            if (args.Length == 0)
+            if (args.Length < 2)
             {
-                Console.WriteLine("Please specify the path of the C# file to be analyzed.");
+                DisplayHelp();
                 Environment.Exit(0);
             }
-            string filePath = args[0];
+
+            string parameter = args[0];
+            switch (parameter)
+            {
+                case "-file":
+                    {
+                        string filePath = args[1];
+                        AnalyzeFile(filePath);
+                        break;
+                    };
+                case "-project":
+                    {
+                        string projectLocation = args[1];
+                        AnalyzeProject(projectLocation);
+                        break;
+                    };
+                default:
+                    DisplayHelp();
+                    break;   
+            }
+        }
+
+        private static void AnalyzeProject(string projectLocation)
+        {
+            if (!Directory.Exists(projectLocation))
+            {
+                Console.WriteLine("The specified folder was not found. Please provide a valid location.");
+                Environment.Exit(0);
+            }
+            var files = Directory.EnumerateFiles(projectLocation, "*.cs", SearchOption.AllDirectories);
+            Console.WriteLine();
+            foreach (var file in files)
+            {
+                AnalyzeFile(file);
+            }
+        }
+
+        private static void AnalyzeFile(string filePath)
+        {
             if (!File.Exists(filePath))
             {
                 Console.WriteLine("The specified file was not found. Please provide a valid path for the file.");
                 Environment.Exit(0);
             }
-
             FileStream fileStream = new FileStream(filePath, FileMode.Open);
-            CSharpFile file = new CSharpFile(fileStream);
-            Console.WriteLine(String.Format("The file has {0} lines.", file.GetCodeLinesCount()));
+            var fileName = Path.GetFileName(filePath);
+            using (CSharpFile file = new CSharpFile(fileStream))
+            {
+                Console.WriteLine(String.Format("{0}\n\n\t\tNumber of code lines: {1}\n\t\tComment/lines code ratio: {2}\n",
+                    fileName, file.GetCodeLinesCount(), file.GetCommentLinesCodeRatio()));
+            }
+        }
+
+        public static void DisplayHelp()
+        {
+            Console.WriteLine(@"
+            Usage:   
+                SourceCodeAnalyzer.exe -file <csharp file path>
+                SourceCodeAnalyzer.exe -project <project location> 
+                ");
         }
     }
 }

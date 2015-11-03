@@ -21,9 +21,11 @@ namespace SourceCodeAnalyzerTests
             uint expectedCount = 5;
             byte[] byteArray = Encoding.UTF8.GetBytes(file);
             MemoryStream stream = new MemoryStream(byteArray);
-            CSharpFile csharpFile = new CSharpFile(stream);
-            uint lineCount = csharpFile.GetCodeLinesCount();
-            lineCount.ShouldEqual(expectedCount);
+            using (CSharpFile csharpFile = new CSharpFile(stream))
+            {
+                uint lineCount = csharpFile.GetCodeLinesCount();
+                lineCount.ShouldEqual(expectedCount);
+            }
         }
 
         [TestMethod]
@@ -39,9 +41,11 @@ namespace SourceCodeAnalyzerTests
             uint expectedCount = 5;
             byte[] byteArray = Encoding.UTF8.GetBytes(file);
             MemoryStream stream = new MemoryStream(byteArray);
-            CSharpFile csharpFile = new CSharpFile(stream);
-            uint lineCount = csharpFile.GetCodeLinesCount();
-            lineCount.ShouldEqual(expectedCount);
+            using (CSharpFile csharpFile = new CSharpFile(stream))
+            {
+                uint lineCount = csharpFile.GetCodeLinesCount();
+                lineCount.ShouldEqual(expectedCount);
+            }
         }
 
         [TestMethod]
@@ -63,9 +67,11 @@ namespace SourceCodeAnalyzerTests
             uint expectedCount = 6;
             byte[] byteArray = Encoding.UTF8.GetBytes(file);
             MemoryStream stream = new MemoryStream(byteArray);
-            CSharpFile csharpFile = new CSharpFile(stream);
-            uint lineCount = csharpFile.GetCodeLinesCount();
-            lineCount.ShouldEqual(expectedCount);
+            using (CSharpFile csharpFile = new CSharpFile(stream))
+            {
+                uint lineCount = csharpFile.GetCodeLinesCount();
+                lineCount.ShouldEqual(expectedCount);
+            }
         }
 
         [TestMethod]
@@ -82,9 +88,11 @@ namespace SourceCodeAnalyzerTests
             uint expectedCount = 6;
             byte[] byteArray = Encoding.UTF8.GetBytes(file);
             MemoryStream stream = new MemoryStream(byteArray);
-            CSharpFile csharpFile = new CSharpFile(stream);
-            uint lineCount = csharpFile.GetCodeLinesCount();
-            lineCount.ShouldEqual(expectedCount);
+            using (CSharpFile csharpFile = new CSharpFile(stream))
+            {
+                uint lineCount = csharpFile.GetCodeLinesCount();
+                lineCount.ShouldEqual(expectedCount);
+            }
         }
 
         [TestMethod]
@@ -96,9 +104,11 @@ namespace SourceCodeAnalyzerTests
             uint expectedCount = 2;
             byte[] byteArray = Encoding.UTF8.GetBytes(file);
             MemoryStream stream = new MemoryStream(byteArray);
-            CSharpFile csharpFile = new CSharpFile(stream);
-            uint lineCount = csharpFile.GetCodeLinesCount();
-            lineCount.ShouldEqual(expectedCount);
+            using (CSharpFile csharpFile = new CSharpFile(stream))
+            {
+                uint lineCount = csharpFile.GetCodeLinesCount();
+                lineCount.ShouldEqual(expectedCount);
+            }
         }
 
         [TestMethod]
@@ -110,9 +120,41 @@ namespace SourceCodeAnalyzerTests
             uint expectedCount = 1;
             byte[] byteArray = Encoding.UTF8.GetBytes(file);
             MemoryStream stream = new MemoryStream(byteArray);
-            CSharpFile csharpFile = new CSharpFile(stream);
-            uint lineCount = csharpFile.GetCodeLinesCount();
-            lineCount.ShouldEqual(expectedCount);
+            using (CSharpFile csharpFile = new CSharpFile(stream))
+            {
+                uint lineCount = csharpFile.GetCodeLinesCount();
+                lineCount.ShouldEqual(expectedCount); 
+            }
+        }        
+
+        [TestMethod]
+        public void CodeRatioShouldBeCorrect()
+        {
+            string file = @"//count
+            int result = 0;//don't count
+            /*should be counted
+            because it is a comment,
+            a block comment*/
+            for (ushort index = 1; index <= tableSize; index++)/*don't count this line*/
+            {
+                result += index * index;/*another
+                comment
+                on multiple lines*/ result++;
+            }
+            /*ana
+            are mere*/
+            /*this is a comment*/";
+            string expectedRatio = "8:14";
+            uint expectedCount = 6;
+            byte[] byteArray = Encoding.UTF8.GetBytes(file);
+            MemoryStream stream = new MemoryStream(byteArray);
+            using (CSharpFile csharpFile = new CSharpFile(stream))
+            {
+                uint lineCount = csharpFile.GetCodeLinesCount();
+                lineCount.ShouldEqual(expectedCount);
+                string codeRatio = csharpFile.GetCommentLinesCodeRatio();
+                codeRatio.ShouldEqual(expectedRatio); 
+            }
         }
     }
 }

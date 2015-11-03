@@ -17,35 +17,35 @@ namespace SourceCodeAnalyzerTests
         }
 
         [TestMethod]
-        public void LineWithOnlyCommentShouldBeLineComment()
+        public void LineWithLineCommentShouldBeComment()
         {
             string line = @"//comment";
             CSharpLine csharpLine = new CSharpLine(line);
-            csharpLine.IsLineComment().ShouldBeTrue();
+            csharpLine.IsComment().ShouldBeTrue();
         }
 
         [TestMethod]
-        public void LineWithCodeAndLineCommentShouldntBeLineComment()
+        public void LineWithCodeAndLineCommentShouldntBeComment()
         {
             string line = @"int a = 0;//comment";
             CSharpLine csharpLine = new CSharpLine(line);
-            csharpLine.IsLineComment().ShouldBeFalse();
+            csharpLine.IsComment().ShouldBeFalse();
         }
 
         [TestMethod]
-        public void OnlyBlockCommentShouldBeBlockComment()
+        public void BlockCommentShouldBeComment()
         {
             string line = @"/*block comment*/";
             CSharpLine csharpLine = new CSharpLine(line);
-            csharpLine.IsBlockComment().ShouldBeTrue();
+            csharpLine.IsComment().ShouldBeTrue();
         }
 
         [TestMethod]
-        public void LineWithCodeAndBlockCommentShouldntBeBlockComment()
+        public void LineWithCodeAndBlockCommentShouldntBeComment()
         {
             string line = @"int a = 0;/*block comment*/";
             CSharpLine csharpLine = new CSharpLine(line);
-            csharpLine.IsBlockComment().ShouldBeFalse();
+            csharpLine.IsComment().ShouldBeFalse();
         }
 
         [TestMethod]
