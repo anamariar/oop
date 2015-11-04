@@ -46,6 +46,7 @@
   <ItemGroup>
     <Compile Include="CSharpFile.cs" />
     <Compile Include="CSharpLine.cs" />
+    <Compile Include="CSharpProjectFile.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

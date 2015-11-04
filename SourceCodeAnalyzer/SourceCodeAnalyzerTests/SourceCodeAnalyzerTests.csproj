@@ -58,6 +58,7 @@
   <ItemGroup>
     <Compile Include="CSharpFileTests.cs" />
     <Compile Include="CSharpLineTests.cs" />
+    <Compile Include="CSharpProjectFileTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -38,18 +38,21 @@ namespace SourceCodeAnalyzer
             }
         }
 
-        private static void AnalyzeProject(string projectLocation)
+        private static void AnalyzeProject(string projectFile)
         {
-            if (!Directory.Exists(projectLocation))
+            if (!File.Exists(projectFile))
             {
-                Console.WriteLine("The specified folder was not found. Please provide a valid location.");
+                Console.WriteLine("The specified file was not found. Please provide a valid project file.");
                 Environment.Exit(0);
             }
-            var files = Directory.EnumerateFiles(projectLocation, "*.cs", SearchOption.AllDirectories);
+            FileStream fileStream = new FileStream(projectFile, FileMode.Open);
+            CSharpProjectFile cSharpProjectFile = new CSharpProjectFile(fileStream);
+            var files = cSharpProjectFile.GetFiles();
             Console.WriteLine();
+            string rootPath = Path.GetDirectoryName(projectFile);
             foreach (var file in files)
             {
-                AnalyzeFile(file);
+                AnalyzeFile(Path.Combine(rootPath,file));
             }
         }
 
