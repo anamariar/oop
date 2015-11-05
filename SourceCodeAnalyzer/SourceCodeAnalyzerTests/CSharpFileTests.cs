@@ -24,6 +24,7 @@ namespace SourceCodeAnalyzerTests
             {
                 using (CSharpFile csharpFile = new CSharpFile(stream))
                 {
+                    csharpFile.Analyze();
                     uint lineCount = csharpFile.GetCodeLinesCount();
                     lineCount.ShouldEqual(expectedCount);
                 }
@@ -46,6 +47,7 @@ namespace SourceCodeAnalyzerTests
             {
                 using (CSharpFile csharpFile = new CSharpFile(stream))
                 {
+                    csharpFile.Analyze();
                     uint lineCount = csharpFile.GetCodeLinesCount();
                     lineCount.ShouldEqual(expectedCount);
                 }
@@ -74,6 +76,7 @@ namespace SourceCodeAnalyzerTests
             {
                 using (CSharpFile csharpFile = new CSharpFile(stream))
                 {
+                    csharpFile.Analyze();
                     uint lineCount = csharpFile.GetCodeLinesCount();
                     lineCount.ShouldEqual(expectedCount);
                 }
@@ -97,6 +100,7 @@ namespace SourceCodeAnalyzerTests
             {
                 using (CSharpFile csharpFile = new CSharpFile(stream))
                 {
+                    csharpFile.Analyze();
                     uint lineCount = csharpFile.GetCodeLinesCount();
                     lineCount.ShouldEqual(expectedCount);
                 }
@@ -115,6 +119,7 @@ namespace SourceCodeAnalyzerTests
             {
                 using (CSharpFile csharpFile = new CSharpFile(stream))
                 {
+                    csharpFile.Analyze();
                     uint lineCount = csharpFile.GetCodeLinesCount();
                     lineCount.ShouldEqual(expectedCount);
                 }
@@ -131,7 +136,9 @@ namespace SourceCodeAnalyzerTests
             byte[] byteArray = Encoding.UTF8.GetBytes(file);
             using (MemoryStream stream = new MemoryStream(byteArray))
             {
-                using (CSharpFile csharpFile = new CSharpFile(stream)) {
+                using (CSharpFile csharpFile = new CSharpFile(stream))
+                {
+                    csharpFile.Analyze();
                     uint lineCount = csharpFile.GetCodeLinesCount();
                     lineCount.ShouldEqual(expectedCount);
                 }
@@ -162,6 +169,7 @@ namespace SourceCodeAnalyzerTests
             {
                 using (CSharpFile csharpFile = new CSharpFile(stream))
                 {
+                    csharpFile.Analyze();
                     uint lineCount = csharpFile.GetCodeLinesCount();
                     lineCount.ShouldEqual(expectedCount);
                     string codeRatio = csharpFile.GetCommentLinesCodeRatio();

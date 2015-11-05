@@ -6,13 +6,6 @@ using System.Threading.Tasks;
 
 namespace SourceCodeAnalyzer
 {
-    public enum LineType
-    {
-        Comment,
-        Code,
-        Empty
-    }
-
     public class CSharpLine
     {
         private readonly string content;
@@ -20,11 +13,20 @@ namespace SourceCodeAnalyzer
         private readonly string blockCommentStart = @"/*";
         private readonly string blockCommentEnd = @"*/";
         private readonly string lineCommentStart = @"//";
+        private bool isInsideComment;
         
-        public CSharpLine(string csharpLine)
+        public CSharpLine(string csharpLine, bool isInsideComment)
         {
             content = csharpLine.Trim(trimChars);
-        }        
+            this.isInsideComment = isInsideComment;
+        }
+
+        public CSharpLine(string csharpLine): this(csharpLine, false) { }
+
+        public bool IsInsideComment 
+        {
+            get { return isInsideComment; }
+        }    
 
         public bool IsEndBlockComment()
         {
@@ -56,7 +58,7 @@ namespace SourceCodeAnalyzer
             return string.IsNullOrEmpty(content);
         }
 
-        public LineType GetType(ref bool isInsideComment)
+        public LineType GetType()
         {
             if (IsEmpty())
                 return LineType.Empty;

@@ -69,6 +69,7 @@ namespace SourceCodeAnalyzer
                 var fileName = Path.GetFileName(filePath);
                 using (CSharpFile file = new CSharpFile(fileStream))
                 {
+                    file.Analyze();
                     Console.WriteLine(String.Format("{0}\n\n\t\tNumber of code lines: {1}\n\t\tComment/lines code ratio: {2}\n",
                         fileName, file.GetCodeLinesCount(), file.GetCommentLinesCodeRatio()));
                 }
