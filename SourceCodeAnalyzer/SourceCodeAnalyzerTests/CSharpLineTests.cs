@@ -95,5 +95,69 @@ namespace SourceCodeAnalyzerTests
             CSharpLine csharpLine = new CSharpLine(line);
             csharpLine.IsOnlyEndBlockComment().ShouldBeFalse();
         }
+
+        [TestMethod]
+        public void LineTypeShouldBeCode() {
+            string line = @"for (ushort index = 1; index <= tableSize; index++)/*count this line*/";
+            CSharpLine csharpLine = new CSharpLine(line);
+            bool isInsideComment = false;
+            csharpLine.GetType(ref isInsideComment).ShouldEqual(LineType.Code);
+        }
+
+        [TestMethod]
+        public void LineTypeShouldBeComment() {
+            string line = @"for (ushort index = 1; index <= tableSize; index++)";
+            CSharpLine csharpLine = new CSharpLine(line);
+            bool isInsideComment = true;
+            csharpLine.GetType(ref isInsideComment).ShouldEqual(LineType.Comment);
+        }
+
+        [TestMethod]
+        public void LineTypeShouldBeEmpty() {
+            string line = @"    ";
+            CSharpLine csharpLine = new CSharpLine(line);
+            bool isInsideComment = true;
+            csharpLine.GetType(ref isInsideComment).ShouldEqual(LineType.Empty);
+        }
+
+        [TestMethod]
+        public void LineTypeForLineCommentShouldBeComment() {
+            string line = @"    //comment";
+            CSharpLine csharpLine = new CSharpLine(line);
+            bool isInsideComment = false;
+            csharpLine.GetType(ref isInsideComment).ShouldEqual(LineType.Comment);
+        }
+
+        [TestMethod]
+        public void LineTypeForStartBlockCommentShouldBeCode() {
+            string line = @"int i=0;/*start comment";
+            CSharpLine csharpLine = new CSharpLine(line);
+            bool isInsideComment = false;
+            csharpLine.GetType(ref isInsideComment).ShouldEqual(LineType.Code);
+        }
+
+        [TestMethod]
+        public void LineTypeForOnlyStartBlockCommentShouldBeComment() {
+            string line = @"/*only start comment";
+            CSharpLine csharpLine = new CSharpLine(line);
+            bool isInsideComment = false;
+            csharpLine.GetType(ref isInsideComment).ShouldEqual(LineType.Comment);
+        }
+
+        [TestMethod]
+        public void LineTypeForEndBlockCommentShouldBeCode() {
+            string line = @"end comment/*int i=0;";
+            CSharpLine csharpLine = new CSharpLine(line);
+            bool isInsideComment = false;
+            csharpLine.GetType(ref isInsideComment).ShouldEqual(LineType.Code);
+        }
+
+        [TestMethod]
+        public void LineTypeForOnlyEndBlockCommentShouldBeComment() {
+            string line = @"only end comment*/";
+            CSharpLine csharpLine = new CSharpLine(line);
+            bool isInsideComment = false;
+            csharpLine.GetType(ref isInsideComment).ShouldEqual(LineType.Comment);
+        }
     }
 }

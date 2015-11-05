@@ -9,14 +9,12 @@ using System.Xml.Linq;
 
 namespace SourceCodeAnalyzer
 {
-    public class CSharpProjectFile: IDisposable
+    public class CSharpProjectFile
     {
         private XDocument xmlDoc;
-        private Stream stream;
 
-        public CSharpProjectFile(Stream xmlStream)
+        public CSharpProjectFile(Stream stream)
         {
-            stream = xmlStream;
             xmlDoc = XDocument.Load(stream);
         }
 
@@ -36,19 +34,6 @@ namespace SourceCodeAnalyzer
                 }
             }
             return files;
-        }
-
-        public void Dispose()
-        {
-            Dispose(true);
-        }
-
-        protected virtual void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                if ( stream != null) stream.Dispose();
-            }
         }
     }
 }

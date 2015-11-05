@@ -43,13 +43,13 @@ namespace SourceCodeAnalyzerTests
                 @"Properties\AssemblyInfo.cs"
             };
             byte[] byteArray = Encoding.Default.GetBytes(file);
-            MemoryStream stream = new MemoryStream(byteArray);
-            List<string> resultFiles = new List<string>();
-            using (CSharpProjectFile csharpProject = new CSharpProjectFile(stream))
+            using (MemoryStream stream = new MemoryStream(byteArray))
             {
+                List<string> resultFiles = new List<string>();
+                CSharpProjectFile csharpProject = new CSharpProjectFile(stream);
                 resultFiles = csharpProject.GetFiles();
+                resultFiles.ShouldEqual(expectedFiles); 
             }
-            resultFiles.ShouldEqual(expectedFiles);
         }
     }
 }

@@ -45,14 +45,15 @@ namespace SourceCodeAnalyzer
                 Console.WriteLine("The specified file was not found. Please provide a valid project file.");
                 Environment.Exit(0);
             }
-            FileStream fileStream = new FileStream(projectFile, FileMode.Open);
-            CSharpProjectFile cSharpProjectFile = new CSharpProjectFile(fileStream);
-            var files = cSharpProjectFile.GetFiles();
-            Console.WriteLine();
-            string rootPath = Path.GetDirectoryName(projectFile);
-            foreach (var file in files)
+            using (FileStream fileStream = new FileStream(projectFile, FileMode.Open))
             {
-                AnalyzeFile(Path.Combine(rootPath,file));
+                CSharpProjectFile cSharpProjectFile = new CSharpProjectFile(fileStream);
+                var files = cSharpProjectFile.GetFiles();
+                Console.WriteLine();
+                string rootPath = Path.GetDirectoryName(projectFile);
+                foreach (var file in files) {
+                    AnalyzeFile(Path.Combine(rootPath, file));
+                } 
             }
         }
 
@@ -63,12 +64,14 @@ namespace SourceCodeAnalyzer
                 Console.WriteLine("The specified file was not found. Please provide a valid path for the file.");
                 Environment.Exit(0);
             }
-            FileStream fileStream = new FileStream(filePath, FileMode.Open);
-            var fileName = Path.GetFileName(filePath);
-            using (CSharpFile file = new CSharpFile(fileStream))
+            using (FileStream fileStream = new FileStream(filePath, FileMode.Open))
             {
-                Console.WriteLine(String.Format("{0}\n\n\t\tNumber of code lines: {1}\n\t\tComment/lines code ratio: {2}\n",
-                    fileName, file.GetCodeLinesCount(), file.GetCommentLinesCodeRatio()));
+                var fileName = Path.GetFileName(filePath);
+                using (CSharpFile file = new CSharpFile(fileStream))
+                {
+                    Console.WriteLine(String.Format("{0}\n\n\t\tNumber of code lines: {1}\n\t\tComment/lines code ratio: {2}\n",
+                        fileName, file.GetCodeLinesCount(), file.GetCommentLinesCodeRatio()));
+                }
             }
         }
 
