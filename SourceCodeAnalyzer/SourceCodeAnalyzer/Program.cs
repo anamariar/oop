@@ -4,85 +4,94 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using CommandLine;
 
 namespace SourceCodeAnalyzer
 {
     public class Program
     {
+        public static List<CSharpFileInfo> results = new List<CSharpFileInfo>();
+
         public static void Main(string[] args)
         {
-            if (args.Length < 2)
+            var options = new Options();
+            if (Parser.Default.ParseArguments(args, options))
             {
-                DisplayHelp();
-                Environment.Exit(0);
+                if (!string.IsNullOrEmpty(options.InputFile)) {
+                    results.Add(AnalyzeFile(options.InputFile));
+                } else
+                    if (!string.IsNullOrEmpty(options.InputProject)) {
+                    AnalyzeProject(options.InputProject);
+                } else {
+                    Console.WriteLine(options.GetUsage());
+                    Environment.Exit(0);
+                }
+                if ((!string.IsNullOrEmpty(options.ExportFileType))) {
+                    ExportToFile(options.ExportFilePath, options.ExportFileType);
+                }
             }
+        }
 
-            string parameter = args[0];
-            switch (parameter)
-            {
-                case "-file":
-                    {
-                        string filePath = args[1];
-                        AnalyzeFile(filePath);
-                        break;
-                    };
-                case "-project":
-                    {
-                        string projectLocation = args[1];
-                        AnalyzeProject(projectLocation);
-                        break;
-                    };
+        private static void ExportToFile(string exportFile, string exportType)
+        {
+            switch (exportType) {
+                case "html":
+                    HtmlDocument htmlDoc = new HtmlDocument();
+                    string htmlDocContent = htmlDoc.Generate(results);
+                    FileHelper exportFileHelper = new FileHelper(exportFile, exportType);
+                    exportFileHelper.Write(htmlDocContent);
+                    Console.WriteLine("Exported to: " + exportFileHelper.FullPath);
+                    break;
                 default:
-                    DisplayHelp();
-                    break;   
+                    Console.WriteLine("The export type you specified is not currently supported.");
+                    break;
             }
         }
 
         private static void AnalyzeProject(string projectFile)
         {
-            if (!File.Exists(projectFile))
-            {
-                Console.WriteLine("The specified file was not found. Please provide a valid project file.");
-                Environment.Exit(0);
-            }
+            ValidateFile(projectFile, ".csproj");
             using (FileStream fileStream = new FileStream(projectFile, FileMode.Open))
             {
                 CSharpProjectFile cSharpProjectFile = new CSharpProjectFile(fileStream);
                 var files = cSharpProjectFile.GetFiles();
-                Console.WriteLine();
                 string rootPath = Path.GetDirectoryName(projectFile);
-                foreach (var file in files) {
-                    AnalyzeFile(Path.Combine(rootPath, file));
-                } 
+                foreach (var file in files)
+                   results.Add(AnalyzeFile(Path.Combine(rootPath, file)));
             }
-        }
+        }        
 
-        private static void AnalyzeFile(string filePath)
+        private static CSharpFileInfo AnalyzeFile(string filePath)
         {
-            if (!File.Exists(filePath))
-            {
-                Console.WriteLine("The specified file was not found. Please provide a valid path for the file.");
-                Environment.Exit(0);
-            }
+            ValidateFile(filePath, ".cs");
+            Console.WriteLine();
+            CSharpFileInfo fileResults = new CSharpFileInfo();
             using (FileStream fileStream = new FileStream(filePath, FileMode.Open))
             {
-                var fileName = Path.GetFileName(filePath);
                 using (CSharpFile file = new CSharpFile(fileStream))
                 {
                     file.Analyze();
+                    fileResults.Name = Path.GetFileName(filePath);
+                    fileResults.LineCount = file.GetCodeLinesCount();
+                    fileResults.CodeRatio = file.GetCommentLinesCodeRatio();
                     Console.WriteLine(String.Format("{0}\n\n\t\tNumber of code lines: {1}\n\t\tComment/lines code ratio: {2}\n",
-                        fileName, file.GetCodeLinesCount(), file.GetCommentLinesCodeRatio()));
+                        Path.GetFileName(filePath), file.GetCodeLinesCount(), file.GetCommentLinesCodeRatio()));
                 }
             }
+            return fileResults;
         }
 
-        public static void DisplayHelp()
+        private static void ValidateFile(string file, string fileType)
         {
-            Console.WriteLine(@"
-            Usage:   
-                SourceCodeAnalyzer.exe -file <csharp file path>
-                SourceCodeAnalyzer.exe -project <project location> 
-                ");
+            if (!File.Exists(file)) {
+                Console.WriteLine(String.Format("The specified file was not found. Please provide a valid {0} file.", fileType));
+                Environment.Exit(0);
+            }
+            if (Path.GetExtension(file) != fileType) {
+                Console.WriteLine(String.Format("The specified file is not a {0} file.", fileType));
+                Environment.Exit(0);
+            }            
         }
+        
     }
 }
