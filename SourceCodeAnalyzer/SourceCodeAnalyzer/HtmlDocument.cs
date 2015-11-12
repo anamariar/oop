@@ -15,21 +15,29 @@ namespace SourceCodeAnalyzer
             using (StringWriter stringWriter = new StringWriter(stringBuilder)) {
                 using (HtmlTextWriter writer = new HtmlTextWriter(stringWriter)) {
                     writer.RenderBeginTag(HtmlTextWriterTag.Html);
+                    writer.RenderBeginTag(HtmlTextWriterTag.Style);
+                    writer.Write(@"table, th, td { border: 1px solid black; }");
+                    writer.RenderEndTag();
                     writer.RenderBeginTag(HtmlTextWriterTag.Body);
+                    writer.RenderBeginTag(HtmlTextWriterTag.Table);
+                    writer.RenderBeginTag(HtmlTextWriterTag.Tr);
+                    var fields = typeof(CSharpFileInfo).GetFields();
+                    foreach(var field in fields) {
+                        writer.RenderBeginTag(HtmlTextWriterTag.Th);
+                        writer.Write(field.Name);
+                        writer.RenderEndTag();
+                    }
+                    writer.RenderEndTag();
                     foreach (var fileInfo in fileInfoList) {
-                        var fields = typeof(CSharpFileInfo).GetFields();
+                        writer.RenderBeginTag(HtmlTextWriterTag.Tr);
                         foreach (var field in fields) {
-                            writer.RenderBeginTag(HtmlTextWriterTag.P);
-                            writer.RenderBeginTag(HtmlTextWriterTag.B);
-                            writer.Write(field.Name + ":");
-                            writer.RenderEndTag();
+                            writer.RenderBeginTag(HtmlTextWriterTag.Th);
                             writer.Write(field.GetValue(fileInfo));
                             writer.RenderEndTag();
                         }
-                        writer.RenderBeginTag(HtmlTextWriterTag.P);
-                        writer.Write("--------------------------------------------------------------");
                         writer.RenderEndTag();
                     }
+                    writer.RenderEndTag();
                     writer.RenderEndTag();
                     writer.RenderEndTag();
                 }

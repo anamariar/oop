@@ -36,8 +36,16 @@ namespace SourceCodeAnalyzerTests
             }
             string expectedHtml = @"<!DOCTYPE HTML>
 <html>
-	<body>
-		<p><b>Name:</b>file1.cs</p><p><b>LineCount:</b>5</p><p><b>CodeRatio:</b>0:5</p><p>--------------------------------------------------------------</p>
+	<style>
+		table, th, td { border: 1px solid black; }
+	</style><body>
+		<table>
+			<tr>
+				<th>Name</th><th>LineCount</th><th>CodeRatio</th>
+			</tr><tr>
+				<th>file1.cs</th><th>5</th><th>0:5</th>
+			</tr>
+		</table>
 	</body>
 </html>";
             results.Add(result);
