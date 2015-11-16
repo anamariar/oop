@@ -8,6 +8,6 @@ namespace SourceCodeAnalyzer
 {
     public interface IDocument
     {
-        string Generate(List<CSharpFileInfo> fileInfoList);
+        string Generate(CSharpFilesList fileInfoList);
     }
 }

@@ -8,7 +8,7 @@ namespace SourceCodeAnalyzer
 {
     public class HtmlDocument:IDocument
     {        
-        public string Generate(List<CSharpFileInfo> fileInfoList)
+        public string Generate(CSharpFilesList fileInfoList)
         {
             string content = string.Empty;
             StringBuilder stringBuilder = new StringBuilder("<!DOCTYPE HTML>"+Environment.NewLine);
@@ -28,7 +28,7 @@ namespace SourceCodeAnalyzer
                         writer.RenderEndTag();
                     }
                     writer.RenderEndTag();
-                    foreach (var fileInfo in fileInfoList) {
+                    foreach (var fileInfo in fileInfoList.FilesInfo) {
                         writer.RenderBeginTag(HtmlTextWriterTag.Tr);
                         foreach (var field in fields) {
                             writer.RenderBeginTag(HtmlTextWriterTag.Th);

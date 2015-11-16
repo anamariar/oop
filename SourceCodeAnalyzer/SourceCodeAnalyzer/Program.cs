@@ -10,7 +10,7 @@ namespace SourceCodeAnalyzer
 {
     public class Program
     {
-        public static List<CSharpFileInfo> results = new List<CSharpFileInfo>();
+        public static CSharpFilesList results = new CSharpFilesList();
 
         public static void Main(string[] args)
         {
@@ -26,9 +26,29 @@ namespace SourceCodeAnalyzer
                     Console.WriteLine(options.GetUsage());
                     Environment.Exit(0);
                 }
+                if ((!string.IsNullOrEmpty(options.SortType))) {
+                    IComparer<CSharpFileInfo> comparer = GetComparer(options.SortType);
+                    if (comparer != null)
+                        results.Sort(comparer);
+                    else
+                        Console.WriteLine("Invalid comparer specified.");
+                }
+                WriteToConsole(results);
                 if ((!string.IsNullOrEmpty(options.ExportFileType))) {
                     ExportToFile(options.ExportFilePath, options.ExportFileType);
                 }
+            }
+        }
+
+        private static IComparer<CSharpFileInfo> GetComparer(string sortType)
+        {
+            switch (sortType) {
+                case "lineCount":
+                    return new LineCountComparer();
+                case "name":
+                    return new FilenameComparer();
+                default:
+                    return null;
             }
         }
 
@@ -64,7 +84,6 @@ namespace SourceCodeAnalyzer
         private static CSharpFileInfo AnalyzeFile(string filePath)
         {
             ValidateFile(filePath, ".cs");
-            Console.WriteLine();
             CSharpFileInfo fileResults = new CSharpFileInfo();
             using (FileStream fileStream = new FileStream(filePath, FileMode.Open))
             {
@@ -74,11 +93,17 @@ namespace SourceCodeAnalyzer
                     fileResults.Name = Path.GetFileName(filePath);
                     fileResults.LineCount = file.GetCodeLinesCount();
                     fileResults.CodeRatio = file.GetCommentLinesCodeRatio();
-                    Console.WriteLine(String.Format("{0}\n\n\t\tNumber of code lines: {1}\n\t\tComment/lines code ratio: {2}\n",
-                        Path.GetFileName(filePath), file.GetCodeLinesCount(), file.GetCommentLinesCodeRatio()));
                 }
             }
             return fileResults;
+        }
+
+        private static void WriteToConsole(CSharpFilesList results)
+        {
+            foreach (var fileInfo in results.FilesInfo) {
+                Console.WriteLine(String.Format("{0}\n\n\t\tNumber of code lines: {1}\n\t\tComment/lines code ratio: {2}\n",
+                        fileInfo.Name, fileInfo.LineCount, fileInfo.CodeRatio));
+            }            
         }
 
         private static void ValidateFile(string file, string fileType)

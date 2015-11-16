@@ -22,7 +22,7 @@ namespace SourceCodeAnalyzerTests
             }";
 
             byte[] byteArray = Encoding.UTF8.GetBytes(file);
-            List<CSharpFileInfo> results = new List<CSharpFileInfo>();
+            CSharpFilesList results = new CSharpFilesList();
             CSharpFileInfo result = new CSharpFileInfo();            
             using (MemoryStream stream = new MemoryStream(byteArray))
             {

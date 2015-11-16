@@ -51,11 +51,14 @@
   <ItemGroup>
     <Compile Include="CSharpFile.cs" />
     <Compile Include="CSharpFileInfo.cs" />
+    <Compile Include="CSharpFilesList.cs" />
     <Compile Include="CSharpLine.cs" />
     <Compile Include="CSharpProjectFile.cs" />
     <Compile Include="FileHelper.cs" />
+    <Compile Include="FilenameComparer.cs" />
     <Compile Include="HtmlDocument.cs" />
     <Compile Include="IDocument.cs" />
+    <Compile Include="LineCountComparer.cs" />
     <Compile Include="LineType.cs" />
     <Compile Include="Options.cs" />
     <Compile Include="Program.cs" />

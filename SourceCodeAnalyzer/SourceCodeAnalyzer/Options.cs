@@ -16,12 +16,14 @@ namespace SourceCodeAnalyzer
         [Option('p', "project", Required = false, HelpText = "Input csharp project to analyze.")]
         public string InputProject { get; set; }
 
+        [Option('s', "sort", Required = false, HelpText = "Specify sort type. E.g: lineCount, name")]
+        public string SortType { get; set; }
+
         [Option('e', "export", Required = false, HelpText = "Export file type. E.g: html")]
         public string ExportFileType { get; set; }
 
         [Option("destPath", Required = false, HelpText = "Full path for exported file. If not specified, the file will be generated in the current directory.")]
         public string ExportFilePath { get; set; }
-
 
         [HelpOption(HelpText = "Display this help screen.")]
         public string GetUsage()
